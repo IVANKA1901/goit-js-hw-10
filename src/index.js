@@ -24,16 +24,16 @@ refs.countryInfo.classList.add('is-hidden');
 function onInputChange() {
   searchValue = refs.input.value.trim();
 
+  clearResult();
+
   if (searchValue === '') {
     refs.countryInfo.classList.add('is-hidden');
-    clearResult();
     return;
   } else
     fetchCountries(searchValue)
       .then(countryName => {
         if (countryName.length < 2) {
           refs.countryInfo.classList.remove('is-hidden');
-
           countriesCard(countryName);
           Notiflix.Notify.success(`✨Here are your results!`);
         } else if (countryName.length < 10 && countryName.length > 1) {
@@ -41,21 +41,17 @@ function onInputChange() {
           countriesList(countryName);
           Notiflix.Notify.success(`✨Here are your results!`);
         } else {
-          clearResult();
           Notiflix.Notify.info(
             '⚠️Too many matches found. Please, enter a more specific name.'
           );
         }
       })
       .catch(() => {
-        clearResult();
         Notiflix.Notify.failure('❌Oops, there is no country with that name');
       });
 }
 
 function countriesList(country) {
-  clearResult();
-
   const markup = country
     .map(
       el =>
@@ -70,8 +66,6 @@ function countriesList(country) {
 }
 
 function countriesCard(country) {
-  clearResult();
-
   const el = country[0];
 
   const markupCard = `

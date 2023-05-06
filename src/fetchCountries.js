@@ -6,7 +6,6 @@ export function fetchCountries(name) {
   const PARAMS = `/${name}?${searchParams}`;
 
   const url = BASE_URL + PARAMS;
-  console.log(fetch(url));
   return fetch(url).then(res => {
     if (!res.ok) {
       throw new Error('❌Oops, there is no country with that name');
