@@ -13,39 +13,55 @@ const refs = {
 
 refs.input.addEventListener('input', debounce(onInputChange, DEBOUNCE_DELAY));
 
+function clearResult() {
+  refs.countryInfo.innerHTML = '';
+  refs.countryList.innerHTML = '';
+}
+
+let searchValue = '';
+refs.countryInfo.classList.add('is-hidden');
+
 function onInputChange() {
-  const searchValue = refs.input.value.trim();
+  searchValue = refs.input.value.trim();
 
   if (searchValue === '') {
+    refs.countryInfo.classList.add('is-hidden');
+    clearResult();
     return;
   } else
     fetchCountries(searchValue)
       .then(countryName => {
         if (countryName.length < 2) {
+          refs.countryInfo.classList.remove('is-hidden');
+
           countriesCard(countryName);
           Notiflix.Notify.success(`✨Here are your results!`);
         } else if (countryName.length < 10 && countryName.length > 1) {
+          refs.countryInfo.classList.add('is-hidden');
           countriesList(countryName);
           Notiflix.Notify.success(`✨Here are your results!`);
         } else {
-          // clearResult();
+          clearResult();
           Notiflix.Notify.info(
             '⚠️Too many matches found. Please, enter a more specific name.'
           );
         }
       })
       .catch(() => {
+        clearResult();
         Notiflix.Notify.failure('❌Oops, there is no country with that name');
       });
 }
 
 function countriesList(country) {
+  clearResult();
+
   const markup = country
     .map(
       el =>
-        `<li>
-            <img src="${el.flags.svg}" alt="Country flag" width="40", height="40">
-            <span>${el.name.official}</span>
+        `<li class="country-class-list">
+            <img src="${el.flags.svg}" alt="Country flag" width="50", height="35">
+            <span class="country-list-name">${el.name.official}</span>
         </li>`
     )
     .join('');
@@ -54,15 +70,26 @@ function countriesList(country) {
 }
 
 function countriesCard(country) {
+  clearResult();
+
   const el = country[0];
-  const markupCard = `<div>
-        <div>
-            <img src="${el.flags.svg}" alt="Country flag" width="55", height="35">
-            <h2 class="country-card--name"> ${el.name.official}</h2>
+
+  const markupCard = `
+        <div class="country-card-info-cont">
+            <img src="${
+              el.flags.svg
+            }" alt="Country flag" width="50", height="35">
+            <h2 class="country-card-name"> ${el.name.official}</h2>
         </div>
-            <p>Capital: <span>${el.capital}</span></p>
-            <p>Population: <span>${el.population}</span></p>
-            <p>Languages: <span>${el.languages}</span></p>
-    </div>`;
+            <p class="country-card-descr">Capital: <span>${
+              el.capital
+            }</span></p>
+            <p class="country-card-descr">Population: <span>${
+              el.population
+            }</span></p>
+            <p class="country-card-descr">Languages: <span>${Object.values(
+              el.languages
+            ).join(',')}</span></p>
+    `;
   refs.countryInfo.innerHTML = markupCard;
 }
