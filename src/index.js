@@ -1,4 +1,5 @@
 import debounce from 'lodash.debounce';
+import Notiflix from 'notiflix';
 import './css/styles.css';
 import { fetchCountries } from './fetchCountries';
 
@@ -12,41 +13,33 @@ const refs = {
 
 refs.input.addEventListener('input', debounce(onInputChange, DEBOUNCE_DELAY));
 
-function clearResult() {
-  refs.countryInfo.innerHTML = '';
-  refs.countryList.innerHTML = '';
-}
-
 function onInputChange() {
   const searchValue = refs.input.value.trim();
 
   if (searchValue === '') {
-    clearResult();
     return;
   } else
     fetchCountries(searchValue)
       .then(countryName => {
         if (countryName.length < 2) {
           countriesCard(countryName);
-          console.log(`Your results`);
+          Notiflix.Notify.success(`✨Here are your results!`);
         } else if (countryName.length < 10 && countryName.length > 1) {
           countriesList(countryName);
-          console.log(`Your results`);
+          Notiflix.Notify.success(`✨Here are your results!`);
         } else {
-          clearResult();
-          console.log(
+          // clearResult();
+          Notiflix.Notify.info(
             '⚠️Too many matches found. Please, enter a more specific name.'
           );
         }
       })
       .catch(() => {
-        clearResult();
-        console.log('❌Oops, there is no country with that name');
+        Notiflix.Notify.failure('❌Oops, there is no country with that name');
       });
 }
 
 function countriesList(country) {
-  clearResult();
   const markup = country
     .map(
       el =>
@@ -57,11 +50,10 @@ function countriesList(country) {
     )
     .join('');
 
-  refs.countryList.insertAdjacentElement('beforeend', markup);
+  refs.countryList.innerHTML = markup;
 }
 
 function countriesCard(country) {
-  clearResult();
   const el = country[0];
   const markupCard = `<div>
         <div>
